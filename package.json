@@ -1,11 +1,12 @@
 {
-  "name": "basic-test-starter",
+  "name": "sql-intro-lesson-exercises",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "bluebird": "^3.5.1",
     "jest-cli": "^23.4.2",
-    "jest-json-reporter": "^1.2.2"
+    "jest-json-reporter": "^1.2.2",
+    "promise-mysql": "^3.3.1"
   },
   "devDependencies": {
     "babel-plugin-react-html-attrs": "^2.1.0",
