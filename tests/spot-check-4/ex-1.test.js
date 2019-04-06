@@ -27,9 +27,8 @@ describe("exercise1", () => {
 
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
-        let detailedResult = result.map(r => `${r.name}`).join("\n")
         
-        await testUtils.safeExpect(expect, result.length, 2, "Should return only rows where 'eh' appears somewhere in the name\n" + detailedResult)
+        await testUtils.safeExpect(expect, result.length, 2, "Should return only rows where 'eh' appears somewhere in the name")
         
         for(let expectedName of ["breht", "ehmet"]){
             await testUtils.safeExpect(expect, result.some(r => r.name === expectedName), true, "Should return the rows where the names have an 'eh' somewhere in them")

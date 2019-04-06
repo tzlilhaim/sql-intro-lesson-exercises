@@ -27,9 +27,8 @@ describe("exercise1", () => {
 
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
-        let detailedResult = result.map(r => `${r.name} with a mythology of ${r.mythology} and coolness of ${r.coolness}`).join("\n")
         
-        await testUtils.safeExpect(expect, result.length, 1, "Should return only rows where the mythology is greek, and coolness level is greater than 8. This query returned\n" + detailedResult)
+        await testUtils.safeExpect(expect, result.length, 1, "Should return only rows where the mythology is greek, and coolness level is greater than 8.")
         await testUtils.safeExpect(expect, result[0].name, "d2")
 
         await testUtils.dropAndEndConnection()

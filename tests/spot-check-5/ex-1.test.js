@@ -29,7 +29,7 @@ describe("exercise1", () => {
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
         let expectedOrder = ["Mehit", "Athena", "Zeus", "Hephaestus", "Hera", "Felurian"]
 
-        await testUtils.safeExpect(expect, result.length, 6, `Should return all ${expectedOrder.length} deities in the correct order. Only found ` + result.length)
+        await testUtils.safeExpect(expect, result.length, 6, `Should return all deities in the correct order.`)
         
         for(let i in result){
             await testUtils.safeExpect(expect, result[i].name, expectedOrder[i], "Order of deities incorrect. Remember to order first by creation_date, then by DESCending coolness")

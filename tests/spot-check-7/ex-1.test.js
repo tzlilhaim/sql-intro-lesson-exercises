@@ -27,7 +27,7 @@ describe("exercise1", () => {
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
 
-        // await testUtils.safeExpect(expect, result.length, 3, "Should only remove deities whose main_power *starts* with 'w' - it's ok to have a 'w' elsewhere in the power")
+        await testUtils.safeExpect(expect, result.length, 3, "Should only remove deities whose main_power *starts* with 'w' - it's ok to have a 'w' elsewhere in the power")
 
         for (let r of result) {
             await testUtils.safeExpect(expect, r.main_power[0] === "w", false, "Found a deity whose main_power begins with 'w'")

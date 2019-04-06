@@ -65,6 +65,12 @@ class SqlTestUtils {
         }
     }
 
+    isExactTablename(query) {
+        let startIndex = query.indexOf(this.tableName)
+        let studentTableName = query.substring(startIndex, startIndex + this.tableName.length + 1).replace(/\W/g, '')
+        return studentTableName === this.tableName
+    }
+
     async getStudentQuery(expect) {
         const result = { error: false, errorMessage: "", query: "" }
         try {
@@ -75,7 +81,7 @@ class SqlTestUtils {
                 result.error = true
                 result.errorMessage = "Should not have 'use' in submission file; only submit the requested query"
             }
-            else if (!query.includes(this.tableName)) {
+            else if (!query.includes(this.tableName) || !this.isExactTablename(query)) {
                 result.error = true
                 result.errorMessage = `Wrong table name. Should be ${this.tableName}`
             }
