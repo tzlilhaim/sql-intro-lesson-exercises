@@ -1,3 +1,3 @@
 UPDATE Dolphin
 SET height = 6 
-WHERE name = "Daron"
+WHERE name = "Daron";

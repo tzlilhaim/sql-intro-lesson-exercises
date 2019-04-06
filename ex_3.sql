@@ -1,3 +1,3 @@
 DELETE FROM Dolphin
 WHERE color = "blue" 
-AND height < 2
+AND height < 2;

@@ -1,2 +1,2 @@
 SELECT * FROM Dolphin
-WHERE name LIKE "%on%"
+WHERE name LIKE "%on%";
