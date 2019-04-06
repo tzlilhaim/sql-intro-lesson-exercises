@@ -103,6 +103,5 @@ class SqlTestUtils {
         return result.query
     }
 }
-// let x = new SqlTestUtils(expect, "Der", "check_5")
-// x.getStudentQuery({})
+
 module.exports = SqlTestUtils
