@@ -2,9 +2,9 @@ const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
     jest.setTimeout(10000) //HACK solution to let test run more than 5s default. Not sure of what we could do otherwise; it's a remote server.
-    
+
     it('Should find all that have "on" anywhere in their name', async (done) => {
-        const testUtils = new SqlTestUtils("Dolphin", "ex_2")
+        const testUtils = new SqlTestUtils(expect, "Dolphin", "ex_2")
         const isSelect = true
 
         await testUtils.createSQLConnection()
@@ -24,10 +24,10 @@ describe("exercise1", () => {
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
 
-        await testUtils.safeExpect(expect, result.length, 3, "Unexpected number of dolphins found! Only return those that have 'on' *anywhere* in their name.")
+        await testUtils.safeExpect(result.length, 3, "Unexpected number of dolphins found! Only return those that have 'on' *anywhere* in their name.")
 
         for (let r of result) {
-            await testUtils.safeExpect(expect, r.name.toLowerCase().includes("on"), true, "Found a dolphin that doesn't have 'on' in their name")
+            await testUtils.safeExpect(r.name.toLowerCase().includes("on"), true, "Found a dolphin that doesn't have 'on' in their name")
         }
 
         await testUtils.dropAndEndConnection()

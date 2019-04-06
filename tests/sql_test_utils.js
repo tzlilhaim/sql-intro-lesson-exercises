@@ -3,8 +3,9 @@ const fs = require('fs')
 const sqlConnectionConfig = require('../local_config')
 
 class SqlTestUtils {
-    constructor(tableName, filename) {
+    constructor(expect, tableName, filename) {
         this.connection = null
+        this.expect = expect
         this.tableName = tableName
         this.filename = filename
         this.SELECT_ALL_FROM = "SELECT * FROM"
@@ -33,7 +34,7 @@ class SqlTestUtils {
 
     //invoke Jest's `expect` in a looser way, and also drop the connection on error
     //need to d/c from DB after each expect because otherwise doesn't reach d/c code (failed expect ends the test)
-    async safeExpect(expect, actual, expected, customMessage = null) {
+    async safeExpect(actual, expected, customMessage = null) {
         if (typeof actual == this.STRING && typeof expected == this.STRING) {
             actual = actual.toLowerCase().trim()
             expected = expected.toLowerCase().trim()
@@ -42,8 +43,8 @@ class SqlTestUtils {
         if (actual !== expected) { await this.dropAndEndConnection() }
 
         customMessage ?
-            expect(actual, customMessage).toBe(expected) :
-            expect(actual).toBe(expected)
+            this.expect(actual, customMessage).toBe(expected) :
+            this.expect(actual).toBe(expected)
     }
 
     async getQueryResult(isSelect, query, expect, done, shouldBeEmpty = false) {
@@ -101,6 +102,6 @@ class SqlTestUtils {
         return result.query
     }
 }
-// let x = new SqlTestUtils("der", "check_5")
+// let x = new SqlTestUtils(expect, "Der", "check_5")
 // x.getStudentQuery({})
 module.exports = SqlTestUtils

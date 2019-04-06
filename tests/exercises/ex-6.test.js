@@ -2,9 +2,9 @@ const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
     jest.setTimeout(10000) //HACK solution to let test run more than 5s default. Not sure of what we could do otherwise; it's a remote server.
-    
+
     it('Should retrieve only the name and height for all the healthy dolphins sorted by their height (tallest to shortest)', async (done) => {
-        const testUtils = new SqlTestUtils("Dolphin", "ex_6")
+        const testUtils = new SqlTestUtils(expect, "Dolphin", "ex_6")
         const isSelect = true
 
         await testUtils.createSQLConnection()
@@ -24,13 +24,13 @@ describe("exercise1", () => {
 
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
-        
-        await testUtils.safeExpect(expect, result.length, 3, "Unexpected number of dolphins! Only return the healthy ones")
-        await testUtils.safeExpect(expect, result[0].color, undefined, "Only return the name and height of the dolphins, not the other columns.")
+
+        await testUtils.safeExpect(result.length, 3, "Unexpected number of dolphins! Only return the healthy ones")
+        await testUtils.safeExpect(result[0].color, undefined, "Only return the name and height of the dolphins, not the other columns.")
 
         const expectedHeights = [6, 4, 2]
-        for(let i in result){
-            await testUtils.safeExpect(expect, result[i].height, expectedHeights[i], "Found a dolphin in the wrong order. Make sure you ORDER them BY their DESCending height")
+        for (let i in result) {
+            await testUtils.safeExpect(result[i].height, expectedHeights[i], "Found a dolphin in the wrong order. Make sure you ORDER them BY their DESCending height")
         }
 
         await testUtils.dropAndEndConnection()

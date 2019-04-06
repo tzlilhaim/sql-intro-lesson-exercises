@@ -2,9 +2,9 @@ const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
     jest.setTimeout(10000) //HACK solution to let test run more than 5s default. Not sure of what we could do otherwise; it's a remote server.
-    
+
     it('Should remove any deity whose main power starts with the letter "w"', async (done) => {
-        const testUtils = new SqlTestUtils("Deity", "check_7")
+        const testUtils = new SqlTestUtils(expect, "Deity", "check_7")
         const isSelect = false
 
         await testUtils.createSQLConnection()
@@ -27,10 +27,10 @@ describe("exercise1", () => {
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
 
-        await testUtils.safeExpect(expect, result.length, 3, "Should only remove deities whose main_power *starts* with 'w' - it's ok to have a 'w' elsewhere in the power")
+        await testUtils.safeExpect(result.length, 3, "Should only remove deities whose main_power *starts* with 'w' - it's ok to have a 'w' elsewhere in the power")
 
         for (let r of result) {
-            await testUtils.safeExpect(expect, r.main_power[0] === "w", false, "Found a deity whose main_power begins with 'w'")
+            await testUtils.safeExpect(r.main_power[0] === "w", false, "Found a deity whose main_power begins with 'w'")
         }
 
         await testUtils.dropAndEndConnection()

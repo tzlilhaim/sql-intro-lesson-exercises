@@ -4,7 +4,7 @@ describe("exercise1", () => {
     jest.setTimeout(10000) //HACK solution to let test run more than 5s default. Not sure of what we could do otherwise; it's a remote server.
 
     it('Should query for deities that have "eh" somewhere in their name', async (done) => {
-        const testUtils = new SqlTestUtils("Deity", "check_4")
+        const testUtils = new SqlTestUtils(expect, "Deity", "check_4")
         const isSelect = true
 
         await testUtils.createSQLConnection()
@@ -28,10 +28,10 @@ describe("exercise1", () => {
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
         
-        await testUtils.safeExpect(expect, result.length, 2, "Should return only rows where 'eh' appears somewhere in the name")
+        await testUtils.safeExpect( result.length, 2, "Should return only rows where 'eh' appears somewhere in the name")
         
         for(let expectedName of ["breht", "ehmet"]){
-            await testUtils.safeExpect(expect, result.some(r => r.name === expectedName), true, "Should return the rows where the names have an 'eh' somewhere in them")
+            await testUtils.safeExpect(result.some(r => r.name === expectedName), true, "Should return the rows where the names have an 'eh' somewhere in them")
         }
 
         await testUtils.dropAndEndConnection()
