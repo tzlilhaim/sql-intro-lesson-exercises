@@ -16,6 +16,6 @@
     "jest-transform-stub": "^1.0.0"
   },
   "scripts": {
-    "test-silent": "jest || exit 0"
+    "test-silent": "jest --runInBand || exit 0"
   }
 }

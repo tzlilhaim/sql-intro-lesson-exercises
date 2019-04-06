@@ -11,6 +11,11 @@ class SqlTestUtils {
         this.DROP_TABLE = "DROP TABLE"
         this.STRING = "string"
     }
+
+    getFilePath() {
+        return `./${this.filename}.sql`
+    }
+
     async createSQLConnection() {
         this.connection = await mysql.createConnection(sqlConnectionConfig)
     }
@@ -28,7 +33,7 @@ class SqlTestUtils {
 
     //invoke Jest's `expect` in a looser way, and also drop the connection on error
     //need to d/c from DB after each expect because otherwise doesn't reach d/c code (failed expect ends the test)
-    async safeExpect(expect, actual, expected) {
+    async safeExpect(expect, actual, expected, customMessage = null) {
         if (typeof actual == this.STRING && typeof expected == this.STRING) {
             actual = actual.toLowerCase().trim()
             expected = expected.toLowerCase().trim()
@@ -36,10 +41,12 @@ class SqlTestUtils {
 
         if (actual !== expected) { await this.dropAndEndConnection() }
 
-        expect(actual).toBe(expected)
+        customMessage ?
+            expect(actual, customMessage).toBe(expected) :
+            expect(actual).toBe(expected)
     }
 
-    async getQueryResult(isSelect, query, expect, done) {
+    async getQueryResult(isSelect, query, expect, done, shouldBeEmpty = false) {
         try {
             if (!isSelect) {
                 await this.connection.query(query)
@@ -47,6 +54,8 @@ class SqlTestUtils {
             }
 
             let result = await this.connection.query(query)
+
+            if (!shouldBeEmpty && result.length === 0) { throw "Result from query is empty" }
             return result
         }
         catch (err) {
@@ -59,7 +68,7 @@ class SqlTestUtils {
     async getStudentQuery(expect) {
         const result = { error: false, errorMessage: "", query: "" }
         try {
-            const query = fs.readFileSync(`./${this.filename}.sql`, 'utf8')
+            const query = fs.readFileSync(this.getFilePath(), 'utf8')
             const lines = query.split("\n")
 
             if (lines[0].toLowerCase().includes("use")) {
@@ -75,7 +84,7 @@ class SqlTestUtils {
         } catch (err) {
             result.error = true
             result.errorMessage = `Bad file submission. 
-            Make sure file is called ${this.filename}.sql \n${err}`
+            Make sure you've uploaded a file called ${this.filename}.sql \n${err}`
         }
 
         if (result.error) {
@@ -86,5 +95,6 @@ class SqlTestUtils {
         return result.query
     }
 }
-
+// let x = new SqlTestUtils("der", "check_5")
+// x.getStudentQuery({})
 module.exports = SqlTestUtils
