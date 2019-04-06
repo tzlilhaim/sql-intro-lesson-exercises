@@ -1,10 +1,8 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
-    jest.setTimeout(10000) //HACK solution to let test run more than 5s default. Not sure of what we could do otherwise; it's a remote server.
-
     it('Should query for deities name, coolness, and creation date. Order the results first by creation date, then by decreasing coolness.', async (done) => {
-        const testUtils = new SqlTestUtils(expect, "Deity", "check_5")
+        const testUtils = new SqlTestUtils(expect, jest, "Deity", "check_5")
         const isSelect = true
 
         await testUtils.createSQLConnection()

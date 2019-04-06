@@ -3,7 +3,7 @@ const fs = require('fs')
 const sqlConnectionConfig = require('../local_config')
 
 class SqlTestUtils {
-    constructor(expect, tableName, filename) {
+    constructor(expect, jest, tableName, filename) {
         this.connection = null
         this.expect = expect
         this.tableName = tableName
@@ -11,6 +11,7 @@ class SqlTestUtils {
         this.SELECT_ALL_FROM = "SELECT * FROM"
         this.DROP_TABLE = "DROP TABLE"
         this.STRING = "string"
+        jest.setTimeout(15000) //HACK solution to let test run more than 5s default. Not sure of what we could do properly; it's a remote server.
     }
 
     getFilePath() {
