@@ -12,7 +12,7 @@
     "babel-plugin-react-html-attrs": "^2.1.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "jest": "^23.4.2",
-    "jest-expect-message": "^1.0.0",
+    "jest-expect-message": "github:Elevationacademy/jest-expect-message",
     "jest-transform-stub": "^1.0.0"
   },
   "scripts": {

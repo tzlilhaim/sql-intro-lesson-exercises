@@ -1,6 +1,10 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
+
+    afterEach(async (done) => {
+        // do what you gotta do
+    })
     it('Should find all dolphins with a height greater than 2', async (done) => {
         const testUtils = new SqlTestUtils(expect, jest, "Dolphin", "ex_1")
         const isSelect = true
