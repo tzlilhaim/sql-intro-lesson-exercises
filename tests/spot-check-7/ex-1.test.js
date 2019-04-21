@@ -28,7 +28,10 @@ describe("exercise1", () => {
         ])
 
         const studentQuery = await testUtils.getStudentQuery(expect)
-        let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
+        let result = await testUtils.getQueryResult(isSelect, studentQuery)
+        
+        expect(result.result, result.message).not.toBeNull()
+        result = result.result
 
         expect(result.length, "Should only remove deities whose main_power *starts* with 'w' - it's ok to have a 'w' elsewhere in the power")
             .toBe(3)

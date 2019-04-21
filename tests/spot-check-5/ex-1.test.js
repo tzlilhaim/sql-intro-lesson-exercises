@@ -29,7 +29,11 @@ describe("exercise1", () => {
         ])
 
         const studentQuery = await testUtils.getStudentQuery(expect)
-        let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
+        let result = await testUtils.getQueryResult(isSelect, studentQuery)
+        
+        expect(result.result, result.message).not.toBeNull()
+        result = result.result
+        
         let expectedOrder = ["Mehit", "Athena", "Zeus", "Hephaestus", "Hera", "Felurian"]
 
         expect(result.length, `Should return all deities in the correct order.`)
@@ -39,7 +43,7 @@ describe("exercise1", () => {
             expect(result[i].name, "Order of deities incorrect. Remember to order first by creation_date, then by DESCending coolness")
                 .toBe(expectedOrder[i])
         }
-        
+
         done() //for async
     });
 })

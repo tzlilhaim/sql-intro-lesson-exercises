@@ -22,7 +22,9 @@ describe("exercise1", () => {
     )`])
 
     const studentQuery = await testUtils.getStudentQuery(expect)
-    let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
+    let result = await testUtils.getQueryResult(isSelect, studentQuery)
+    expect(result.result, result.message).not.toBeNull()
+    result = result.result
 
     expect(result[0].name, 'Expected `name` to be Felurian').toBe("Felurian")
     expect(result[0].mythology, 'Expected `mythology` to be Faen').toBe("Faen")

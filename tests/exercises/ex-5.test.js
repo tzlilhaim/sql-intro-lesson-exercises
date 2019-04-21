@@ -26,7 +26,10 @@ describe("exercise1", () => {
         ])
 
         const studentQuery = await testUtils.getStudentQuery(expect)
-        let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
+        let result = await testUtils.getQueryResult(isSelect, studentQuery)
+        
+        expect(result.result, result.message).not.toBeNull()
+        result = result.result
 
         let healthyCount = result.filter(d => d.healthy === 1).length
         expect(healthyCount, "Unexpected number of healthy dolphins! Only update the 'healthy' to FALSE for dolphins that are either brown OR green")

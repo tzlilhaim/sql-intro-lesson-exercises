@@ -26,7 +26,10 @@ describe("exercise1", () => {
         ])
 
         const studentQuery = await testUtils.getStudentQuery(expect)
-        let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
+        let result = await testUtils.getQueryResult(isSelect, studentQuery)
+        
+        expect(result.result, result.message).not.toBeNull()
+        result = result.result
 
         expect(result.length, "Unexpected number of dolphins found! Only delete those that are blue AND have a height *less than* 2.")
             .toBe(3)

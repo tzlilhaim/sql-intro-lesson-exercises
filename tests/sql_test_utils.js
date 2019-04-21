@@ -32,23 +32,23 @@ class SqlTestUtils {
         await this.connection.end()
     }
 
-    async getQueryResult(isSelect, query, expect, done, shouldBeEmpty = false) {
-        try {
-            if (!isSelect) {
-                await this.connection.query(query)
-                query = `${this.SELECT_ALL_FROM} ${this.tableName}`
-            }
+    async getQueryResult(isSelect, query, shouldBeEmpty = false) {
+        const badSyntaxResult = { result: null, message: "Error running your query, please check the syntax" }
 
-            let result = await this.connection.query(query)
+        if (!isSelect) {
+            try { await this.connection.query(query) }
+            catch (error) { return badSyntaxResult }
 
-            if (!shouldBeEmpty && result.length === 0) { throw "Result from query is empty" }
-            return result
+            query = `${this.SELECT_ALL_FROM} ${this.tableName}`
         }
-        catch (err) {
-            await this.dropAndEndConnection()
-            expect(err, err.toString()).toBeFalsy()
-            done() //for async
-        }
+
+        let result
+        try { result = await this.connection.query(query) }
+        catch (error) { return badSyntaxResult }
+
+        return (!shouldBeEmpty && result.length === 0) ?
+            { result: null, message: "Result from query is empty" } :
+            { result }
     }
 
     isExactTablename(query) {

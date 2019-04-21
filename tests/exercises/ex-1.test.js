@@ -9,7 +9,7 @@ describe("exercise1", () => {
 
     it('Should find all dolphins with a height greater than 2', async (done) => {
         const isSelect = true
-        
+
         await testUtils.createSQLConnection()
         await testUtils.tableSetup([`
         CREATE TABLE Dolphin(
@@ -25,7 +25,10 @@ describe("exercise1", () => {
         ])
 
         const studentQuery = await testUtils.getStudentQuery(expect)
-        let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
+        let result = await testUtils.getQueryResult(isSelect, studentQuery)
+        
+        expect(result.result, result.message).not.toBeNull()
+        result = result.result
 
         expect(result.length, "Unexpected number of dolphins found! Only return those with a height *greater* than 2.").toBe(2)
 
