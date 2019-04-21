@@ -1,8 +1,13 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
+    const testUtils = new SqlTestUtils(expect, "Dolphin", "ex_5")
+    afterEach(async (done) => {
+        await testUtils.dropAndEndConnection()
+        done()
+    })
+
     it('Should update any the "healthy" column of any dolphin for any brown or green dolphin to FALSE', async (done) => {
-        const testUtils = new SqlTestUtils(expect, jest, "Dolphin", "ex_5")
         const isSelect = false
 
         await testUtils.createSQLConnection()
@@ -24,15 +29,17 @@ describe("exercise1", () => {
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
 
         let healthyCount = result.filter(d => d.healthy === 1).length
-        await testUtils.safeExpect(healthyCount, 3, "Unexpected number of healthy dolphins! Only update the 'healthy' to FALSE for dolphins that are either brown OR green")
+        expect(healthyCount, "Unexpected number of healthy dolphins! Only update the 'healthy' to FALSE for dolphins that are either brown OR green")
+            .toBe(3)
 
         let d2 = result.find(d => d.name === "d2")
         let d4 = result.find(d => d.name === "d4")
 
-        await testUtils.safeExpect(d2.healthy, 0, "Found a green dolphin tagged as healthy - should be false!")
-        await testUtils.safeExpect(d4.healthy, 0, "Found a brown dolphin tagged as healthy - should be false!")
+        expect(d2.healthy, "Found a green dolphin tagged as healthy - should be false!")
+            .toBeFalsy()
+        expect(d4.healthy, "Found a brown dolphin tagged as healthy - should be false!")
+            .toBeFalsy()
 
-        await testUtils.dropAndEndConnection()
         done() //for async
     });
 })

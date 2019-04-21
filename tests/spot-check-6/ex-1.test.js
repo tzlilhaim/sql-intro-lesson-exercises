@@ -1,8 +1,13 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
+    const testUtils = new SqlTestUtils(expect, "Deity", "check_6")
+    afterEach(async (done) => {
+        await testUtils.dropAndEndConnection()
+        done()
+    })
+
     it('Should update every deity whose coolness level is above 10 to have a coolness level of 10', async (done) => {
-        const testUtils = new SqlTestUtils(expect, jest, "Deity", "check_6")
         const isSelect = false
 
         await testUtils.createSQLConnection()
@@ -28,10 +33,10 @@ describe("exercise1", () => {
         let expectedLevels = [8, 9, 10]
 
         for (let r of result) {
-            await testUtils.safeExpect(expectedLevels.includes(r.coolness) && r.coolness <= 10, true, "Only a deity whose coolness is above 10 should have their coolness changed to 10. Everyone else should stay the same.")
+            expect(expectedLevels.includes(r.coolness) && r.coolness <= 10, "Only a deity whose coolness is above 10 should have their coolness changed to 10. Everyone else should stay the same.")
+                .toBeTruthy()
         }
 
-        await testUtils.dropAndEndConnection()
         done() //for async
     });
 })

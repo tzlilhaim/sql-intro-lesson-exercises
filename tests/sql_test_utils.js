@@ -3,7 +3,7 @@ const fs = require('fs')
 const sqlConnectionConfig = require('../local_config')
 
 class SqlTestUtils {
-    constructor(expect, jest, tableName, filename) {
+    constructor(expect, tableName, filename) {
         this.connection = null
         this.expect = expect
         this.tableName = tableName
@@ -11,7 +11,6 @@ class SqlTestUtils {
         this.SELECT_ALL_FROM = "SELECT * FROM"
         this.DROP_TABLE = "DROP TABLE"
         this.STRING = "string"
-        jest.setTimeout(15000) //HACK solution to let test run more than 5s default. Not sure of what we could do properly; it's a remote server.
     }
 
     getFilePath() {
@@ -31,21 +30,6 @@ class SqlTestUtils {
     async dropAndEndConnection() {
         await this.connection.query(`${this.DROP_TABLE} ${this.tableName}`)
         await this.connection.end()
-    }
-
-    //invoke Jest's `expect` in a looser way, and also drop the connection on error
-    //need to d/c from DB after each expect because otherwise doesn't reach d/c code (failed expect ends the test)
-    async safeExpect(actual, expected, customMessage = null) {
-        if (typeof actual == this.STRING && typeof expected == this.STRING) {
-            actual = actual.toLowerCase().trim()
-            expected = expected.toLowerCase().trim()
-        }
-
-        if (actual !== expected) { await this.dropAndEndConnection() }
-
-        customMessage ?
-            this.expect(actual, customMessage).toBe(expected) :
-            this.expect(actual).toBe(expected)
     }
 
     async getQueryResult(isSelect, query, expect, done, shouldBeEmpty = false) {

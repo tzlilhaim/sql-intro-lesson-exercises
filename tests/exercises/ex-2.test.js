@@ -1,8 +1,13 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
-    it('Should find all that have "on" anywhere in their name', async (done) => {
-        const testUtils = new SqlTestUtils(expect, jest, "Dolphin", "ex_2")
+    const testUtils = new SqlTestUtils(expect, "Dolphin", "ex_2")
+    afterEach(async (done) => {
+        await testUtils.dropAndEndConnection()
+        done()
+    })
+
+    it('Should find all dolphins that have "on" anywhere in their name', async (done) => {
         const isSelect = true
 
         await testUtils.createSQLConnection()
@@ -22,13 +27,14 @@ describe("exercise1", () => {
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
 
-        await testUtils.safeExpect(result.length, 3, "Unexpected number of dolphins found! Only return those that have 'on' *anywhere* in their name.")
+        expect(result.length, "Unexpected number of dolphins found! Only return those that have 'on' *anywhere* in their name.")
+            .toBe(3)
 
         for (let r of result) {
-            await testUtils.safeExpect(r.name.toLowerCase().includes("on"), true, "Found a dolphin that doesn't have 'on' in their name")
+            expect(r.name.toLowerCase().includes("on"), "Found a dolphin that doesn't have 'on' in their name")
+                .toBeTruthy()
         }
 
-        await testUtils.dropAndEndConnection()
         done() //for async
     });
 })

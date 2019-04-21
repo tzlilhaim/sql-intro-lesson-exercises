@@ -1,8 +1,13 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
+    const testUtils = new SqlTestUtils(expect, "Dolphin", "ex_6")
+    afterEach(async (done) => {
+        await testUtils.dropAndEndConnection()
+        done()
+    })
+
     it('Should retrieve only the name and height for all the healthy dolphins sorted by their height (tallest to shortest)', async (done) => {
-        const testUtils = new SqlTestUtils(expect, jest, "Dolphin", "ex_6")
         const isSelect = true
 
         await testUtils.createSQLConnection()
@@ -23,15 +28,17 @@ describe("exercise1", () => {
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
 
-        await testUtils.safeExpect(result.length, 3, "Unexpected number of dolphins! Only return the healthy ones")
-        await testUtils.safeExpect(result[0].color, undefined, "Only return the name and height of the dolphins, not the other columns.")
+        expect(result.length, "Unexpected number of dolphins! Only return the healthy ones")
+            .toBe(3)
+        expect(result[0].color, "Only return the name and height of the dolphins, not the other columns.")
+            .toBeUndefined()
 
         const expectedHeights = [6, 4, 2]
         for (let i in result) {
-            await testUtils.safeExpect(result[i].height, expectedHeights[i], "Found a dolphin in the wrong order. Make sure you ORDER them BY their DESCending height")
+            expect(result[i].height, "Found a dolphin in the wrong order. Make sure you ORDER them BY their DESCending height")
+                .toBe(expectedHeights[i])
         }
 
-        await testUtils.dropAndEndConnection()
         done() //for async
     });
 })

@@ -1,8 +1,13 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
+    const testUtils = new SqlTestUtils(expect, "Deity", "check_2")
+    afterEach(async (done) => {
+        await testUtils.dropAndEndConnection()
+        done()
+    })
+
     it('Should select only the coolness level and names of your deities, instead of using an *', async (done) => {
-        const testUtils = new SqlTestUtils(expect, jest, "Deity", "check_2")
         const isSelect = true
 
         await testUtils.createSQLConnection()
@@ -22,14 +27,18 @@ describe("exercise1", () => {
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
 
-        await testUtils.safeExpect(result[0].name, "test-name")
-        await testUtils.safeExpect(result[0].coolness, 42)
+        expect(result[0].name, "Remember to select the name of your deities!")
+            .toBe("test-name")
+        expect(result[0].coolness, "Remember to select the coolness of your deities!")
+            .toBe(42)
 
-        await testUtils.safeExpect(result[0].mythology, undefined, "Should only return coolness and name columns. This query also returned mythology")
-        await testUtils.safeExpect(result[0].main_power, undefined, "Should only return coolness and name columns. This query also returned main_power")
-        await testUtils.safeExpect(result[0].creation_date, undefined, "Should only return coolness and name columns. This query also returned creation_date")
+        expect(result[0].mythology, "Should only return coolness and name columns. This query also returned mythology")
+            .toBeUndefined()
+        expect(result[0].main_power, "Should only return coolness and name columns. This query also returned main_power")
+            .toBeUndefined()
+        expect(result[0].creation_date, "Should only return coolness and name columns. This query also returned creation_date")
+            .toBeUndefined()
 
-        await testUtils.dropAndEndConnection()
         done() //for async
     });
 })

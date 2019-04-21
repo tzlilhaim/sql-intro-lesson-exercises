@@ -1,8 +1,13 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
+    const testUtils = new SqlTestUtils(expect, "Deity", "check_5")
+    afterEach(async (done) => {
+        await testUtils.dropAndEndConnection()
+        done()
+    })
+
     it('Should query for deities name, coolness, and creation date. Order the results first by creation date, then by decreasing coolness.', async (done) => {
-        const testUtils = new SqlTestUtils(expect, jest, "Deity", "check_5")
         const isSelect = true
 
         await testUtils.createSQLConnection()
@@ -27,13 +32,14 @@ describe("exercise1", () => {
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
         let expectedOrder = ["Mehit", "Athena", "Zeus", "Hephaestus", "Hera", "Felurian"]
 
-        await testUtils.safeExpect(result.length, 6, `Should return all deities in the correct order.`)
+        expect(result.length, `Should return all deities in the correct order.`)
+            .toBe(6)
 
         for (let i in result) {
-            await testUtils.safeExpect(result[i].name, expectedOrder[i], "Order of deities incorrect. Remember to order first by creation_date, then by DESCending coolness")
+            expect(result[i].name, "Order of deities incorrect. Remember to order first by creation_date, then by DESCending coolness")
+                .toBe(expectedOrder[i])
         }
-
-        await testUtils.dropAndEndConnection()
+        
         done() //for async
     });
 })

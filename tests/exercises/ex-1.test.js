@@ -1,14 +1,15 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
-
+    const testUtils = new SqlTestUtils(expect, "Dolphin", "ex_1")
     afterEach(async (done) => {
-        // do what you gotta do
+        await testUtils.dropAndEndConnection()
+        done()
     })
-    it('Should find all dolphins with a height greater than 2', async (done) => {
-        const testUtils = new SqlTestUtils(expect, jest, "Dolphin", "ex_1")
-        const isSelect = true
 
+    it('Should find all dolphins with a height greater than 2', async (done) => {
+        const isSelect = true
+        
         await testUtils.createSQLConnection()
         await testUtils.tableSetup([`
         CREATE TABLE Dolphin(
@@ -26,13 +27,12 @@ describe("exercise1", () => {
         const studentQuery = await testUtils.getStudentQuery(expect)
         let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
 
-        await testUtils.safeExpect(result.length, 2, "Unexpected number of dolphins found! Only return those with a height *greater* than 2.")
+        expect(result.length, "Unexpected number of dolphins found! Only return those with a height *greater* than 2.").toBe(2)
 
         for (let r of result) {
-            await testUtils.safeExpect(r.height > 2, true, "Found a dolphin whose height is less than or equal to 2")
+            expect(r.height > 2, "Found a dolphin whose height is less than or equal to 2").toBe(true)
         }
 
-        await testUtils.dropAndEndConnection()
         done() //for async
     });
 })
