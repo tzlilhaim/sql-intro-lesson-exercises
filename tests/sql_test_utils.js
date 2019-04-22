@@ -3,9 +3,8 @@ const fs = require('fs')
 const sqlConnectionConfig = require('../local_config')
 
 class SqlTestUtils {
-    constructor(expect, tableName, filename) {
+    constructor(tableName, filename) {
         this.connection = null
-        this.expect = expect
         this.tableName = tableName
         this.filename = filename
         this.SELECT_ALL_FROM = "SELECT * FROM"
@@ -33,7 +32,8 @@ class SqlTestUtils {
     }
 
     async getQueryResult(isSelect, query, shouldBeEmpty = false) {
-        const badSyntaxResult = { result: null, message: "Error running your query, please check the syntax" }
+        const extraErrorForInsert = isSelect ? "" : " and make sure you're using all the necessary columns" 
+        const badSyntaxResult = { result: null, message: "Error running your query, please check the syntax" + extraErrorForInsert }
 
         if (!isSelect) {
             try { await this.connection.query(query) }
@@ -57,34 +57,33 @@ class SqlTestUtils {
         return studentTableName === this.tableName
     }
 
-    async getStudentQuery(expect) {
-        const result = { error: false, errorMessage: "", query: "" }
+    _error = message => { return { error: true, errorMessage: message } }
+
+    _loadFile() {
         try {
-            const query = fs.readFileSync(this.getFilePath(), 'utf8')
-            const lines = query.split("\n")
+            return fs.readFileSync(this.getFilePath(), 'utf8')
+        } catch (err) { return null }
+    }
 
-            if (lines[0].toLowerCase().includes("use")) {
-                result.error = true
-                result.errorMessage = "Should not have 'use' in submission file; only submit the requested query"
-            }
-            else if (!query.includes(this.tableName) || !this.isExactTablename(query)) {
-                result.error = true
-                result.errorMessage = `Wrong table name. Should be ${this.tableName}`
-            }
-            else { result.query = query }
+    async getStudentQuery() {
+        let query = this._loadFile()
+        if (!query) { return this._error(`Bad file submission. Make sure you've uploaded a file called ${this.filename}.sql in your root directory`) }
 
-        } catch (err) {
-            result.error = true
-            result.errorMessage = `Bad file submission. 
-            Make sure you've uploaded a file called ${this.filename}.sql \n${err}`
+        const lines = query.split("\n")
+        if (!lines.length) {
+            return this._error("Seems you've submitted an empty file")
+        }
+        if (!lines[0].length) {
+            return this._error("Your query should start at the beginning of the file - don't leave an empty line")
+        }
+        if (lines[0].toLowerCase().includes("use")) {
+            return this._error("Should not have 'use' in submission file; only submit the requested query")
+        }
+        if (!query.includes(this.tableName) || !this.isExactTablename(query)) {
+            return this._error(`Wrong table name. Should be exactly ${this.tableName}`)
         }
 
-        if (result.error) {
-            await this.dropAndEndConnection()
-            return expect(result.error, result.errorMessage).toBeFalsy()
-        }
-
-        return result.query
+        return { error: false, query }
     }
 }
 

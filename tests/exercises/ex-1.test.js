@@ -1,7 +1,7 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
-    const testUtils = new SqlTestUtils(expect, "Dolphin", "ex_1")
+    const testUtils = new SqlTestUtils("Dolphin", "ex_1")
     afterEach(async (done) => {
         await testUtils.dropAndEndConnection()
         done()
@@ -24,16 +24,19 @@ describe("exercise1", () => {
             `INSERT INTO Dolphin VALUES("d4", "c", 4, DEFAULT);`,
         ])
 
-        const studentQuery = await testUtils.getStudentQuery(expect)
-        let result = await testUtils.getQueryResult(isSelect, studentQuery)
+        let studentQuery = await testUtils.getStudentQuery()
+        expect(studentQuery.error, studentQuery.errorMessage).toBeFalsy()
         
+        studentQuery = studentQuery.query
+        let result = await testUtils.getQueryResult(isSelect, studentQuery)
+
         expect(result.result, result.message).not.toBeNull()
         result = result.result
 
         expect(result.length, "Unexpected number of dolphins found! Only return those with a height *greater* than 2.").toBe(2)
 
         for (let r of result) {
-            expect(r.height > 2, "Found a dolphin whose height is less than or equal to 2").toBe(true)
+            expect(r.height > 2, "Your query returned a dolphin whose height is less than or equal to 2").toBe(true)
         }
 
         done() //for async

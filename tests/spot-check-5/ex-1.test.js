@@ -1,7 +1,7 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
-    const testUtils = new SqlTestUtils(expect, "Deity", "check_5")
+    const testUtils = new SqlTestUtils("Deity", "check_5")
     afterEach(async (done) => {
         await testUtils.dropAndEndConnection()
         done()
@@ -28,9 +28,12 @@ describe("exercise1", () => {
             `INSERT INTO Deity VALUES(null, "Mehit", "myth", "dp", 7, '-3000');`
         ])
 
-        const studentQuery = await testUtils.getStudentQuery(expect)
-        let result = await testUtils.getQueryResult(isSelect, studentQuery)
+        let studentQuery = await testUtils.getStudentQuery()
+        expect(studentQuery.error, studentQuery.errorMessage).toBeFalsy()
         
+        studentQuery = studentQuery.query
+        let result = await testUtils.getQueryResult(isSelect, studentQuery)
+
         expect(result.result, result.message).not.toBeNull()
         result = result.result
         

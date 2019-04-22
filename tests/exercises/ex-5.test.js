@@ -1,7 +1,7 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
-    const testUtils = new SqlTestUtils(expect, "Dolphin", "ex_5")
+    const testUtils = new SqlTestUtils("Dolphin", "ex_5")
     afterEach(async (done) => {
         await testUtils.dropAndEndConnection()
         done()
@@ -25,9 +25,12 @@ describe("exercise1", () => {
             `INSERT INTO Dolphin VALUES("d5", "red", 0, DEFAULT);`
         ])
 
-        const studentQuery = await testUtils.getStudentQuery(expect)
+        let studentQuery = await testUtils.getStudentQuery()
+        expect(studentQuery.error, studentQuery.errorMessage).toBeFalsy()
+
+        studentQuery = studentQuery.query
         let result = await testUtils.getQueryResult(isSelect, studentQuery)
-        
+
         expect(result.result, result.message).not.toBeNull()
         result = result.result
 
@@ -38,10 +41,13 @@ describe("exercise1", () => {
         let d2 = result.find(d => d.name === "d2")
         let d4 = result.find(d => d.name === "d4")
 
-        expect(d2.healthy, "Found a green dolphin tagged as healthy - should be false!")
-            .toBeFalsy()
-        expect(d4.healthy, "Found a brown dolphin tagged as healthy - should be false!")
-            .toBeFalsy()
+        for(let d of [d2, d4]){
+            expect(d, "Hmm, we're missing a dolphin. Make sure you're only updating, and not deleting anything by mistake")
+                .toBeTruthy()
+    
+            expect(d.healthy, `Found a ${d.color} dolphin tagged as healthy - should be false!`)
+                .toBeFalsy()
+        }
 
         done() //for async
     });

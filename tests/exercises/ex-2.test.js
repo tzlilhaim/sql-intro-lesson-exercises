@@ -1,7 +1,7 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
-    const testUtils = new SqlTestUtils(expect, "Dolphin", "ex_2")
+    const testUtils = new SqlTestUtils("Dolphin", "ex_2")
     afterEach(async (done) => {
         await testUtils.dropAndEndConnection()
         done()
@@ -24,7 +24,10 @@ describe("exercise1", () => {
             `INSERT INTO Dolphin VALUES("Calonor", "c", 0, DEFAULT);`,
         ])
 
-        const studentQuery = await testUtils.getStudentQuery(expect)
+        let studentQuery = await testUtils.getStudentQuery()
+        expect(studentQuery.error, studentQuery.errorMessage).toBeFalsy()
+        
+        studentQuery = studentQuery.query
         let result = await testUtils.getQueryResult(isSelect, studentQuery)
 
         expect(result.result, result.message).not.toBeNull()
