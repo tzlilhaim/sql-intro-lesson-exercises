@@ -32,7 +32,7 @@ class SqlTestUtils {
     }
 
     async getQueryResult(isSelect, query, shouldBeEmpty = false) {
-        const extraErrorForInsert = isSelect ? "" : " and make sure you're using all the necessary columns" 
+        const extraErrorForInsert = isSelect ? "" : " and make sure you're using all the necessary columns"
         const badSyntaxResult = { result: null, message: "Error running your query, please check the syntax" + extraErrorForInsert }
 
         if (!isSelect) {
@@ -67,10 +67,10 @@ class SqlTestUtils {
 
     async getStudentQuery() {
         let query = this._loadFile()
-        if (!query) { return this._error(`Bad file submission. Make sure you've uploaded a file called ${this.filename}.sql in your root directory`) }
+        if (query === null) { return this._error(`Bad file submission. Make sure you've uploaded a file called ${this.filename}.sql in your root directory`) }
 
         const lines = query.split("\n")
-        if (!lines.length) {
+        if (lines.length < 1 || lines.every(l => l.length === 0)) {
             return this._error("Seems you've submitted an empty file")
         }
         if (!lines[0].length) {
