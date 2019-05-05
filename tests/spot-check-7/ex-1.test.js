@@ -1,8 +1,13 @@
 const SqlTestUtils = require('../sql_test_utils')
 
 describe("exercise1", () => {
+    const testUtils = new SqlTestUtils("Deity", "check_7")
+    afterEach(async (done) => {
+        await testUtils.dropAndEndConnection()
+        done()
+    })
+
     it('Should remove any deity whose main power starts with the letter "w"', async (done) => {
-        const testUtils = new SqlTestUtils(expect, jest, "Deity", "check_7")
         const isSelect = false
 
         await testUtils.createSQLConnection()
@@ -22,16 +27,23 @@ describe("exercise1", () => {
             `INSERT INTO Deity VALUES(null, "name5", "myth", "howl", 0, 0);`
         ])
 
-        const studentQuery = await testUtils.getStudentQuery(expect)
-        let result = await testUtils.getQueryResult(isSelect, studentQuery, expect, done)
+        let studentQuery = await testUtils.getStudentQuery()
+        expect(studentQuery.error, studentQuery.errorMessage).toBeFalsy()
+        
+        studentQuery = studentQuery.query
+        let result = await testUtils.getQueryResult(isSelect, studentQuery)
 
-        await testUtils.safeExpect(result.length, 3, "Should only remove deities whose main_power *starts* with 'w' - it's ok to have a 'w' elsewhere in the power")
+        expect(result.result, result.message).not.toBeNull()
+        result = result.result
+
+        expect(result.length, "Should only remove deities whose main_power *starts* with 'w' - it's ok to have a 'w' elsewhere in the power")
+            .toBe(3)
 
         for (let r of result) {
-            await testUtils.safeExpect(r.main_power[0] === "w", false, "Found a deity whose main_power begins with 'w'")
+            expect(r.main_power[0] === "w", "Found a deity whose main_power begins with 'w'")
+                .toBeFalsy()
         }
 
-        await testUtils.dropAndEndConnection()
         done() //for async
     });
 })

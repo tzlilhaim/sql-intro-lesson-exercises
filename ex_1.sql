@@ -1,1 +1,0 @@
-SELECT * FROM Dolphin WHERE height > 2;
