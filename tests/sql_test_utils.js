@@ -1,17 +1,20 @@
 const mysql = require('promise-mysql');
 const fs = require('fs')
-const sqlConnectionConfig = require('../local_config')
+const sqlConnectionConfig = {
+    host: 'localhost',
+    user: 'root',
+    database: 'sql_intro',
+    insecureAuth: true
+}
 
 class SqlTestUtils {
-    constructor(expect, jest, tableName, filename) {
+    constructor(tableName, filename) {
         this.connection = null
-        this.expect = expect
         this.tableName = tableName
         this.filename = filename
         this.SELECT_ALL_FROM = "SELECT * FROM"
         this.DROP_TABLE = "DROP TABLE"
         this.STRING = "string"
-        jest.setTimeout(15000) //HACK solution to let test run more than 5s default. Not sure of what we could do properly; it's a remote server.
     }
 
     getFilePath() {
@@ -33,38 +36,24 @@ class SqlTestUtils {
         await this.connection.end()
     }
 
-    //invoke Jest's `expect` in a looser way, and also drop the connection on error
-    //need to d/c from DB after each expect because otherwise doesn't reach d/c code (failed expect ends the test)
-    async safeExpect(actual, expected, customMessage = null) {
-        if (typeof actual == this.STRING && typeof expected == this.STRING) {
-            actual = actual.toLowerCase().trim()
-            expected = expected.toLowerCase().trim()
+    async getQueryResult(isSelect, query, shouldBeEmpty = false) {
+        const extraErrorForInsert = isSelect ? "" : " and make sure you're using all the necessary columns"
+        const badSyntaxResult = { result: null, message: "Error running your query, please check the syntax" + extraErrorForInsert }
+
+        if (!isSelect) {
+            try { await this.connection.query(query) }
+            catch (error) { return badSyntaxResult }
+
+            query = `${this.SELECT_ALL_FROM} ${this.tableName}`
         }
 
-        if (actual !== expected) { await this.dropAndEndConnection() }
+        let result
+        try { result = await this.connection.query(query) }
+        catch (error) { return badSyntaxResult }
 
-        customMessage ?
-            this.expect(actual, customMessage).toBe(expected) :
-            this.expect(actual).toBe(expected)
-    }
-
-    async getQueryResult(isSelect, query, expect, done, shouldBeEmpty = false) {
-        try {
-            if (!isSelect) {
-                await this.connection.query(query)
-                query = `${this.SELECT_ALL_FROM} ${this.tableName}`
-            }
-
-            let result = await this.connection.query(query)
-
-            if (!shouldBeEmpty && result.length === 0) { throw "Result from query is empty" }
-            return result
-        }
-        catch (err) {
-            await this.dropAndEndConnection()
-            expect(err, err.toString()).toBeFalsy()
-            done() //for async
-        }
+        return (!shouldBeEmpty && result.length === 0) ?
+            { result: null, message: "Result from query is empty" } :
+            { result }
     }
 
     isExactTablename(query) {
@@ -73,34 +62,33 @@ class SqlTestUtils {
         return studentTableName === this.tableName
     }
 
-    async getStudentQuery(expect) {
-        const result = { error: false, errorMessage: "", query: "" }
+    _error = message => { return { error: true, errorMessage: message } }
+
+    _loadFile() {
         try {
-            const query = fs.readFileSync(this.getFilePath(), 'utf8')
-            const lines = query.split("\n")
+            return fs.readFileSync(this.getFilePath(), 'utf8')
+        } catch (err) { return null }
+    }
 
-            if (lines[0].toLowerCase().includes("use")) {
-                result.error = true
-                result.errorMessage = "Should not have 'use' in submission file; only submit the requested query"
-            }
-            else if (!query.includes(this.tableName) || !this.isExactTablename(query)) {
-                result.error = true
-                result.errorMessage = `Wrong table name. Should be ${this.tableName}`
-            }
-            else { result.query = query }
+    async getStudentQuery() {
+        let query = this._loadFile()
+        if (query === null) { return this._error(`Bad file submission. Make sure you've uploaded a file called ${this.filename}.sql in your root directory`) }
 
-        } catch (err) {
-            result.error = true
-            result.errorMessage = `Bad file submission. 
-            Make sure you've uploaded a file called ${this.filename}.sql \n${err}`
+        const lines = query.split("\n")
+        if (lines.length < 1 || lines.every(l => l.length === 0)) {
+            return this._error("Seems you've submitted an empty file")
+        }
+        if (!lines[0].length) {
+            return this._error("Your query should start at the beginning of the file - don't leave an empty line")
+        }
+        if (lines[0].toLowerCase().includes("use")) {
+            return this._error("Should not have 'use' in submission file; only submit the requested query")
+        }
+        if (!query.includes(this.tableName) || !this.isExactTablename(query)) {
+            return this._error(`Wrong table name. Should be exactly ${this.tableName}`)
         }
 
-        if (result.error) {
-            await this.dropAndEndConnection()
-            return expect(result.error, result.errorMessage).toBeFalsy()
-        }
-
-        return result.query
+        return { error: false, query }
     }
 }
 
