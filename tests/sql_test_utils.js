@@ -3,7 +3,7 @@ const fs = require('fs')
 const sqlConnectionConfig = {
     host: 'localhost',
     user: 'root',
-    database: 'sql_intro',
+    database: 'sql_ex',
     insecureAuth: true
 }
 
@@ -76,13 +76,13 @@ class SqlTestUtils {
 
         const lines = query.split("\n")
         if (lines.length < 1 || lines.every(l => l.length === 0)) {
-            return this._error("Seems you've submitted an empty file")
+            return this._error(`Seems you've submitted an empty file. Make sure your query is in ${this.filename}.sql`)
         }
         if (!lines[0].length) {
-            return this._error("Your query should start at the beginning of the file - don't leave an empty line")
+            return this._error(`Your query should start at the beginning of the file (${this.filename}.sql) - don't leave an empty line`)
         }
         if (lines[0].toLowerCase().includes("use")) {
-            return this._error("Should not have 'use' in submission file; only submit the requested query")
+            return this._error(`Should not have 'use' in ${this.filename}.sql file; only submit the requested query`)
         }
         if (!query.includes(this.tableName) || !this.isExactTablename(query)) {
             return this._error(`Wrong table name. Should be exactly ${this.tableName}`)
