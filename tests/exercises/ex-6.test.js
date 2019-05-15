@@ -1,6 +1,6 @@
 const SqlTestUtils = require('../sql_test_utils')
 
-describe("exercise1", () => {
+describe("exercise6", () => {
     const testUtils = new SqlTestUtils("Dolphin", "ex_6")
     afterEach(async (done) => {
         await testUtils.dropAndEndConnection()
