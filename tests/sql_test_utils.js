@@ -96,7 +96,7 @@ class SqlTestUtils {
         if (!lines[0].length) {
             return this._error(`Your query should start at the beginning of the file (${this.filename}.sql) - don't leave an empty line`)
         }
-        if (!query.includes(this.tableName) || !this.isExactTablename(query)) {
+        if (!query.toLowerCase().includes(this.tableName.toLowerCase()) || !this.isExactTablename(query)) {
             return this._error(`Wrong table name. Should be exactly ${this.tableName}`)
         }
 
