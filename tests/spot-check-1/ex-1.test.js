@@ -30,9 +30,9 @@ describe("spotcheck1", () => {
     expect(result.result, result.message).not.toBeNull()
     result = result.result
 
-    expect(result[0].name, `Expected 'name' to be Felurian, instead found ${result[0].name}`).toBe("Felurian")
-    expect(result[0].mythology, `Expected 'mythology' to be Faen, instead found ${result[0].mythology}`).toBe("Faen")
-    expect(result[0].main_power, `Expected 'main_power' to be Persuasion, instead found ${result[0].main_power}`).toBe("Persuasion")
+    expect(result[0].name, `Expected the 'name' column to have a value`).not.toBeNull()
+    expect(result[0].mythology, `Expected the 'mythology' column to have a value ${result[0].mythology}`).not.toBeNull()
+    expect(result[0].main_power, `Expected the 'main_power' column to have a value ${result[0].main_power}`).not.toBeNull()
     expect(result[0].coolness, `Expected 'coolness' to be null, instead found ${result[0].coolness}`).toBeNull()
     expect(result[0].creation_date, `Expected 'creation_date' to be 0, instead found ${result[0].creation_date}`).toBe(0)
 

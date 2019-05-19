@@ -57,9 +57,9 @@ class SqlTestUtils {
     }
 
     isExactTablename(query) {
-        let startIndex = query.indexOf(this.tableName)
-        let studentTableName = query.substring(startIndex, startIndex + this.tableName.length + 1).replace(/\W/g, '')
-        return studentTableName === this.tableName
+        let startIndex = query.toLowerCase().indexOf(this.tableName.toLowerCase())
+        let studentTableName = query.toLowerCase().substring(startIndex, startIndex + this.tableName.length + 1).replace(/\W/g, '')
+        return studentTableName.toLowerCase() === this.tableName.toLowerCase()
     }
 
     _error = message => { return { error: true, errorMessage: message } }
