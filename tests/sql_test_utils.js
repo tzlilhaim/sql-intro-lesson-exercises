@@ -3,7 +3,7 @@ const fs = require('fs')
 const sqlConnectionConfig = {
     host: 'localhost',
     user: 'root',
-    database: 'sql_ex',
+    database: 'sql_intro',
     insecureAuth: true
 }
 
@@ -18,7 +18,7 @@ class SqlTestUtils {
     }
 
     getFilePath() {
-        return `./${this.filename}.sql`
+        return `./solutions/${this.filename}.sql`
     }
 
     async createSQLConnection() {
