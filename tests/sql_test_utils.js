@@ -101,8 +101,6 @@ class SqlTestUtils {
         }
 
         query = this.getCleanQuery(lines)
-        console.log(query)
-
         return { error: false, query }
     }
 }
