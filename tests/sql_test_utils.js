@@ -42,14 +42,14 @@ class SqlTestUtils {
 
         if (!isSelect) {
             try { await this.connection.query(query) }
-            catch (error) { return badSyntaxResult }
+            catch (error) { console.log(error); return badSyntaxResult }
 
             query = `${this.SELECT_ALL_FROM} ${this.tableName}`
         }
 
         let result
         try { result = await this.connection.query(query) }
-        catch (error) { return badSyntaxResult }
+        catch (error) { console.log(error); return badSyntaxResult }
 
         return (!shouldBeEmpty && result.length === 0) ?
             { result: null, message: "Result from query is empty" } :
@@ -70,10 +70,25 @@ class SqlTestUtils {
         } catch (err) { return null }
     }
 
+    getCleanQuery(lines) {
+        //remove any 'use' and comment lines
+        let linesSansCommentsOrUse = lines.filter(l => l[0] !== "-" && !l.toLowerCase().includes("use"))
+        
+        for (let l in linesSansCommentsOrUse) {
+            let line = linesSansCommentsOrUse[l]
+            let indexOfDash = line.indexOf("--") //remove inline-comments
+            
+            if (indexOfDash > -1) {
+                linesSansCommentsOrUse[l] = line.replace(line.substring(indexOfDash), "")
+            }
+        }
+        return linesSansCommentsOrUse.join("\n")
+    }
+
     async getStudentQuery() {
         let query = this._loadFile()
         if (query === null) { return this._error(`Bad file submission. Make sure you've uploaded a file called ${this.filename}.sql in your root directory`) }
-
+        
         const lines = query.split("\n")
         if (lines.length < 1 || lines.every(l => l.length === 0)) {
             return this._error(`Seems you've submitted an empty file. Make sure your query is in ${this.filename}.sql`)
@@ -81,12 +96,12 @@ class SqlTestUtils {
         if (!lines[0].length) {
             return this._error(`Your query should start at the beginning of the file (${this.filename}.sql) - don't leave an empty line`)
         }
-        if (lines[0].toLowerCase().includes("use")) {
-            return this._error(`Should not have 'use' in ${this.filename}.sql file; only submit the requested query`)
-        }
         if (!query.includes(this.tableName) || !this.isExactTablename(query)) {
             return this._error(`Wrong table name. Should be exactly ${this.tableName}`)
         }
+
+        query = this.getCleanQuery(lines)
+        console.log(query)
 
         return { error: false, query }
     }
