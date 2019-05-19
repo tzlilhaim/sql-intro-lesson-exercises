@@ -101,6 +101,7 @@ class SqlTestUtils {
         }
 
         query = this.getCleanQuery(lines)
+        
         return { error: false, query }
     }
 }
