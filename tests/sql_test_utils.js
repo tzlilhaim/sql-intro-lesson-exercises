@@ -3,7 +3,7 @@ const fs = require('fs')
 const sqlConnectionConfig = {
     host: 'localhost',
     user: 'root',
-    database: 'sql_intro',
+    database: 'sql_testing',
     insecureAuth: true
 }
 
