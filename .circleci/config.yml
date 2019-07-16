@@ -18,6 +18,7 @@ jobs:
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/mongo:3.4.4
+      
 
     working_directory: ~/repo
     steps:
@@ -26,11 +27,11 @@ jobs:
           command: >
            curl -XPUT -d '{ "repoName": "'$CIRCLE_PROJECT_REPONAME'", "buildUrl":"'$CIRCLE_BUILD_URL'", "status": "RUNNING", "commitSha": "'$CIRCLE_SHA1'", "buildId": "'$CIRCLE_BUILD_NUM'", "testResults": "{}"}' 'https://hnvbmypjh9.execute-api.eu-central-1.amazonaws.com/prod/circleci-builds'
       - checkout
-        - attach_workspace:
+      - attach_workspace:
          at: ~/repo
-     - run:
+      - run:
          name: Clone tests repo
-         command: git clone https://github.com/Elevationacademy/code-activity-checks.git --branch {{sql-intro-lesson-exercises}} ~/repo/tests
+         command: git clone https://github.com/Elevationacademy/code-activity-checks.git --branch sql-intro-lesson-exercises ~/repo/tests
 
       - restore_cache:
           keys:
